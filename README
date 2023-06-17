@@ -1,0 +1,65 @@
+INTERACTIVE ASSEMBLY
+
+This script uses GNU assembler, objdump and grep to
+assemble one or more assembly instructions provided
+via standard input.
+
+The actual programs used are declared by the AS and
+OBJDUMP environment variables, and feature the
+default values of "as" and "objdump" respectively.
+
+If you wish to use different implementations, such
+as those that have been built by GNU binutils as a
+part of a cross-compilation toolchain, then define
+the AS, ASFLAGS and OBJDUMP environment variables
+accordingly.
+
+The AS output (or OBJDUMP input) file is specified 
+by OUTPUT, and has a default value of "/tmp/a.out".
+
+
+DEFAULT USAGE (ASSUMING A LINUX/x86-64 HOST)
+
+  $ ./ias
+
+  incl %esi; decl %ecx
+     0:   ff c6                   inc    %esi
+     2:   ff c9                   dec    %ecx
+
+  movq %rax, 0x08(%rsp)
+     0:   48 89 44 24 08          mov    %rax,0x8(%rsp)
+  
+  syscall
+     0:   0f 05                   syscall 
+
+  ^D
+
+
+USER-DEFINED AS AND OBJDUMP
+
+  $ AS=arm-linux-gnueabihf-as \
+    OBJDUMP=arm-linux-gnueabihf-objdump \
+    ./ias
+
+  ldmia sp!, {r3, r4, r5, r6, r7, r8, r9, pc}          
+     0:   e8bd83f8        pop     {r3, r4, r5, r6, r7, r8, r9, pc}
+  
+  movs r0, #10
+     0:   e3b0000a        movs    r0, #10
+  
+  ^D
+
+
+USER-DEFINED AS, ASFLAGS AND OBJDUMP
+
+  $ AS=arm-linux-gnueabihf-as ASFLAGS=-mthumb \
+    OBJDUMP=arm-linux-gnueabihf-objdump \
+    ./ias
+
+  pop     {r7, pc}
+     0:   bd80            pop     {r7, pc}
+  
+  movs    r0, #10
+     0:   200a            movs    r0, #10
+
+  ^D

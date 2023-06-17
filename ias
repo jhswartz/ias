@@ -1,0 +1,14 @@
+#!/bin/sh
+
+AS=${AS:-as}
+OBJDUMP=${OBJDUMP:-objdump}
+OUTPUT=${OUTPUT:-/tmp/a.out}
+
+set -e
+
+while read line
+do
+	echo "$line" | "$AS" -o "$OUTPUT" "$ASFLAGS"
+	"$OBJDUMP" -j .text -D "$OUTPUT" | grep [0-f]:
+	echo
+done
